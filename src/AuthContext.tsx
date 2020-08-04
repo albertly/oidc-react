@@ -1,5 +1,10 @@
 import React, { FC, useState, useEffect } from 'react';
-import { UserManager, User } from 'oidc-client';
+import {
+  UserManager,
+  User,
+  WebStorageStateStoreSettings,
+  WebStorageStateStore,
+} from 'oidc-client';
 
 export interface Location {
   search: string;
@@ -43,6 +48,11 @@ export interface AuthProviderProps {
   autoSignIn?: boolean;
 
   /**
+   * defaults to { store: window.sessionStorage }
+   */
+  userStoreSettings?: WebStorageStateStoreSettings;
+
+  /**
    * On before sign in hook. Can be use to store the current url for use after signing in.
    *
    * This only gets called if autoSignIn is true
@@ -81,6 +91,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
   const {
     children,
     autoSignIn = true,
+    userStoreSettings,
     onBeforeSignIn,
     onSignIn,
     onSignOut,
@@ -100,6 +111,7 @@ export const AuthProvider: FC<AuthProviderProps> = (props) => {
       response_type: responseType || 'code',
       scope: scope || 'openid',
       loadUserInfo: true,
+      userStore: new WebStorageStateStore({ store: window.localStorage }),
     });
   }
 
